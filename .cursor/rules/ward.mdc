@@ -1,0 +1,39 @@
+---
+description: Ward project rules (always apply)
+alwaysApply: true
+---
+
+# Ward rules
+
+- Source of truth is Ward-PRD.md. Read the relevant sections before coding. Precedence: Security > Data model > Features > Design > Phases.
+- Work ONE phase at a time. Never start a new phase without the user typing "GO PHASE N".
+- Inside a phase, do ONE numbered step from that phase's Prompt, then stop. Start that step with a plan (max 10 lines), the files you will touch, and any assumption. `GO PHASE N` runs the next unfinished step only. `GATE` runs the phase gate and the Verification Report (Appendix B). The next phase starts only on `GO PHASE N+1`.
+- If a stop rule disagrees on granularity, the step stop wins. Section 4 still wins on security.
+- Output complete files, never partial snippets or "rest unchanged".
+- Be direct. No over-explaining. Ask at most 3 batched questions, and only if the PRD does not answer it.
+- Before using any library, check its current official docs and pin exact versions. Docs win on API details; the PRD wins on product and security design.
+
+## Security
+
+- TypeScript strict. No `any` without a justification comment.
+- Secrets (master password, recovery key, vault key, entry passwords, decrypted note content) never go to logs, files, errors, snapshots, localStorage, or aria/title attributes.
+- Crypto and DB live only in the main process. The renderer never receives the Vault Key. List endpoints never return passwords. Copy-to-clipboard happens in main.
+- Only the primitives in PRD Section 4. Never Math.random for anything security-related. Never invent cryptography.
+- All SQL lives in repos, parameterized. No string-built SQL.
+- Every IPC handler: validate sender, validate payload with Zod, enforce the locked-state allowlist, return Result<T> with safe messages.
+- Electron hardening per PRD 4.7 is mandatory. No remote scripts, fonts, images, or network calls. No CDN.
+
+## UI and motion
+
+- Use design tokens and design/motion.ts only. No raw hex colors, no ad-hoc durations or easings.
+- Animate transform/opacity only. Honor reduced motion everywhere.
+- Theme changes go ONLY through design/theme.ts setTheme(), which owns the circular-reveal view transition (PRD 7.5.1). Never set data-theme elsewhere or add color transitions that fight it.
+- Every screen implements loading, empty, populated, no-results, and error states.
+- Keyboard accessible, visible focus rings, icon buttons have aria-labels, status never color-only.
+- Write UI as a senior UX/UI designer would: restrained, precise, high contrast, consistent spacing from the 4 px scale.
+
+## Quality
+
+- Run typecheck, lint, and tests before saying anything is done. Report real results.
+- Money is integer minor units. Dates are ISO-8601 UTC strings. IDs are ULIDs.
+- No features outside PRD scope. No new dependencies without stating why.

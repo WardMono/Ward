@@ -1,0 +1,16 @@
+node_modules
+dist
+out
+coverage
+.DS_Store
+.eslintcache
+*.log*
+
+# secrets and local vault data
+.env
+.env.*
+*.db
+*.db-wal
+*.db-shm
+vault.header.json
+*.ward-backup

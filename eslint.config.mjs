@@ -4,10 +4,21 @@ import eslintConfigPrettier from '@electron-toolkit/eslint-config-prettier'
 import eslintPluginReact from 'eslint-plugin-react'
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import eslintPluginReactRefresh from 'eslint-plugin-react-refresh'
+import pluginSecurity from 'eslint-plugin-security'
 
 export default defineConfig(
-  { ignores: ['**/node_modules', '**/dist', '**/out'] },
+  {
+    ignores: [
+      '**/node_modules',
+      '**/dist',
+      '**/out',
+      '**/.vitest',
+      '**/test-results',
+      '**/playwright-report'
+    ]
+  },
   tseslint.configs.recommended,
+  pluginSecurity.configs.recommended,
   eslintPluginReact.configs.flat.recommended,
   eslintPluginReact.configs.flat['jsx-runtime'],
   {
@@ -26,6 +37,12 @@ export default defineConfig(
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactRefresh.configs.vite.rules
+    }
+  },
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off'
     }
   },
   eslintConfigPrettier

@@ -6,6 +6,11 @@ coverage
 .eslintcache
 *.log*
 
+# Vitest and Playwright output
+.vitest/
+test-results/
+playwright-report/
+
 # secrets and local vault data
 .env
 .env.*

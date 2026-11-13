@@ -1,154 +1,137 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { extname, join, relative } from "node:path";
+/* eslint-disable security/detect-non-literal-fs-filename -- the path is the workspace root, not a request */
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { extname, join, relative } from 'node:path'
 
-const root = process.argv[2] ?? process.cwd();
-const skip = new Set([
-  "node_modules",
-  "dist",
-  "out",
-  "release",
-  "coverage",
-  ".git",
-  ".cursor",
-]);
-const exts = new Set([
-  ".ts",
-  ".tsx",
-  ".js",
-  ".mjs",
-  ".cjs",
-  ".html",
-  ".css",
-  ".yml",
-  ".yaml",
-]);
+const root = process.argv[2] ?? process.cwd()
+const skip = new Set(['node_modules', 'dist', 'out', 'release', 'coverage', '.git', '.cursor'])
+const exts = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs', '.html', '.css', '.yml', '.yaml'])
 
 const rules = [
   {
-    id: "math-random",
-    severity: "high",
+    id: 'math-random',
+    severity: 'high',
     re: /Math\.random\s*\(/,
-    note: "PRD forbids Math.random for security. A hit in UI motion still needs a reason.",
+    note: 'PRD forbids Math.random for security. A hit in UI motion still needs a reason.'
   },
   {
-    id: "eval-or-function",
-    severity: "high",
+    id: 'eval-or-function',
+    severity: 'high',
     re: /\beval\s*\(|new\s+Function\s*\(/,
-    note: "Forbidden by the Electron hardening checklist.",
+    note: 'Forbidden by the Electron hardening checklist.'
   },
   {
-    id: "node-integration",
-    severity: "high",
+    id: 'node-integration',
+    severity: 'high',
     re: /nodeIntegration\s*:\s*true/,
-    note: "nodeIntegration must stay false.",
+    note: 'nodeIntegration must stay false.'
   },
   {
-    id: "context-isolation-off",
-    severity: "high",
+    id: 'context-isolation-off',
+    severity: 'high',
     re: /contextIsolation\s*:\s*false/,
-    note: "contextIsolation must stay true.",
+    note: 'contextIsolation must stay true.'
   },
   {
-    id: "web-security-off",
-    severity: "high",
+    id: 'web-security-off',
+    severity: 'high',
     re: /webSecurity\s*:\s*false/,
-    note: "webSecurity must stay true.",
+    note: 'webSecurity must stay true.'
   },
   {
-    id: "dangerously-set",
-    severity: "medium",
+    id: 'dangerously-set',
+    severity: 'medium',
     re: /dangerouslySetInnerHTML/,
-    note: "Allowed only with a sanitizer on the same call path.",
+    note: 'Allowed only with a sanitizer on the same call path.'
   },
   {
-    id: "cdn",
-    severity: "high",
+    id: 'cdn',
+    severity: 'high',
     re: /fonts\.googleapis|cdnjs\.|unpkg\.com|jsdelivr\.net|cdn\.jsdelivr/,
-    note: "No CDN. Fonts and scripts ship in the bundle.",
+    note: 'No CDN. Fonts and scripts ship in the bundle.'
   },
   {
-    id: "console-in-crypto",
-    severity: "high",
+    id: 'console-in-crypto',
+    severity: 'high',
     re: /console\.(log|debug|info|warn|error|dir)\s*\(/,
     path: /[/\\]crypto[/\\]/,
-    note: "crypto/ must not log. A test may spy on a logger; it must not call console in src.",
+    note: 'crypto/ must not log. A test may spy on a logger; it must not call console in src.'
   },
   {
-    id: "local-storage",
-    severity: "medium",
+    id: 'local-storage',
+    severity: 'medium',
     re: /localStorage|sessionStorage/,
-    note: "UI prefs go through prefs:set, not web storage. Confirm this hit stores no secret.",
+    note: 'UI prefs go through prefs:set, not web storage. Confirm this hit stores no secret.'
   },
   {
-    id: "generic-ipc",
-    severity: "high",
+    id: 'generic-ipc',
+    severity: 'high',
     re: /ipcRenderer\.(invoke|send)\s*\(/,
     path: /[/\\](preload|renderer)[/\\]/,
-    note: "A hit is only a defect if the channel string is chosen by the renderer. A typed wrapper that calls one fixed channel is fine.",
-  },
-];
+    note: 'A hit is only a defect if the channel string is chosen by the renderer. A typed wrapper that calls one fixed channel is fine.'
+  }
+]
 
 function walk(dir, out) {
   for (const name of readdirSync(dir)) {
-    if (skip.has(name)) continue;
-    const p = join(dir, name);
-    let st;
+    if (skip.has(name)) continue
+    const p = join(dir, name)
+    let st
     try {
-      st = statSync(p);
+      st = statSync(p)
     } catch {
-      continue;
+      continue
     }
-    if (st.isDirectory()) walk(p, out);
-    else if (exts.has(extname(name))) out.push(p);
+    if (st.isDirectory()) walk(p, out)
+    else if (exts.has(extname(name))) out.push(p)
   }
 }
 
 function redact(line) {
   if (/password|secret|vaultkey|recovery|ciphertext/i.test(line)) {
-    return line.replace(/(['"`])[^'"`]{8,}\1/g, "$1[redacted]$1").slice(0, 180);
+    return line.replace(/(['"`])[^'"`]{8,}\1/g, '$1[redacted]$1').slice(0, 180)
   }
-  return line.trim().slice(0, 180);
+  return line.trim().slice(0, 180)
 }
 
-const files = [];
-walk(root, files);
-const findings = [];
+const files = []
+walk(root, files)
+const findings = []
 
 for (const file of files) {
-  const rel = relative(root, file);
-  let text;
+  const rel = relative(root, file)
+  let text
   try {
-    text = readFileSync(file, "utf8");
+    text = readFileSync(file, 'utf8')
   } catch {
-    continue;
+    continue
   }
-  const lines = text.split(/\r?\n/);
+  const lines = text.split(/\r?\n/)
   for (const rule of rules) {
-    if (rule.path && !rule.path.test(rel)) continue;
+    if (rule.path && !rule.path.test(rel)) continue
     lines.forEach((line, i) => {
-      if (!rule.re.test(line)) return;
-      rule.re.lastIndex = 0;
+      if (!rule.re.test(line)) return
+      rule.re.lastIndex = 0
       findings.push({
         severity: rule.severity,
         id: rule.id,
-        file: rel.replaceAll("\\", "/"),
+        file: rel.replaceAll('\\', '/'),
         line: i + 1,
         note: rule.note,
-        snippet: redact(line),
-      });
-    });
+        snippet: redact(line)
+      })
+    })
   }
 }
 
-const high = findings.filter((f) => f.severity === "high").length;
-console.log("WARD_SCAN");
-console.log(`root: ${root}`);
-console.log(`files: ${files.length}`);
-console.log(`findings: ${findings.length}`);
-console.log(`high: ${high}`);
+const high = findings.filter((f) => f.severity === 'high').length
+console.log('WARD_SCAN')
+console.log(`root: ${root}`)
+console.log(`files: ${files.length}`)
+console.log(`findings: ${findings.length}`)
+console.log(`high: ${high}`)
 for (const f of findings) {
-  console.log(`${f.severity}\t${f.id}\t${f.file}:${f.line}`);
-  console.log(`  ${f.snippet}`);
-  console.log(`  ${f.note}`);
+  console.log(`${f.severity}\t${f.id}\t${f.file}:${f.line}`)
+  console.log(`  ${f.snippet}`)
+  console.log(`  ${f.note}`)
 }
-process.exit(high > 0 ? 1 : 0);
+process.exit(high > 0 ? 1 : 0)

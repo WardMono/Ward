@@ -1,1 +1,59 @@
-/* Stub. No tokens and no rules. Step 0.5 owns this file. */
+/* Token values from PRD 7.2. Components use these variables. They do not repeat the hex. */
+
+:root {
+  color-scheme: dark;
+  --bg-base: #0b0d12;
+  --bg-surface: #11141b;
+  --bg-elevated: #171b24;
+  --bg-hover: #1d222d;
+  --bg-active: #252b38;
+  --border-subtle: #232937;
+  --border-strong: #323a4b;
+  --text-primary: #e8ebf2;
+  --text-secondary: #a3abbd;
+  --text-muted: #7a8398;
+  --accent: #7c8cff;
+  --accent-hover: #96a3ff;
+  --accent-pressed: #6272f0;
+  --on-accent: #0b0d12;
+  --success: #3ddc97;
+  --warning: #f5b94b;
+  --danger: #ff6b6b;
+  --focus-ring: #7c8cff;
+  --elev-1: 0 1px 0 rgb(0 0 0 / 40%);
+  --elev-2: 0 8px 24px -8px rgb(0 0 0 / 50%);
+  --elev-3: 0 24px 64px -16px rgb(0 0 0 / 60%);
+  --folder-indigo: #6366f1;
+  --folder-violet: #8b5cf6;
+  --folder-pink: #ec4899;
+  --folder-rose: #f43f5e;
+  --folder-orange: #f97316;
+  --folder-amber: #f59e0b;
+  --folder-lime: #84cc16;
+  --folder-emerald: #10b981;
+  --folder-teal: #14b8a6;
+  --folder-sky: #0ea5e9;
+  --folder-slate: #64748b;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg-base: #f6f7fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #eceef4;
+  --bg-active: #e2e5ee;
+  --border-subtle: #e3e6ee;
+  --border-strong: #c5cad6;
+  --text-primary: #12151c;
+  --text-secondary: #4a5265;
+  --text-muted: #667085;
+  --accent: #4f5fe8;
+  --accent-hover: #3f4fd4;
+  --accent-pressed: #3140b8;
+  --on-accent: #ffffff;
+  --success: #067647;
+  --warning: #b54708;
+  --danger: #b42318;
+  --focus-ring: #4f5fe8;
+}

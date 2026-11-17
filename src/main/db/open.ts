@@ -1,5 +1,7 @@
-/**
- * Stub. No behavior.
- * Phase 2 owns encrypted database open and close.
- */
-export {}
+import Database from 'better-sqlite3-multiple-ciphers'
+
+/** Loads the native cipher module. It does not open the vault. */
+export function loadCipherDriver(): void {
+  const db = new Database(':memory:')
+  db.close()
+}

@@ -1,1 +1,46 @@
-/* Stub. No tokens and no rules. Step 0.5 owns this file. */
+@import 'tailwindcss';
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/jetbrains-mono';
+@import './tokens.css';
+
+@theme inline {
+  --font-sans: 'Inter Variable', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --spacing: 4px;
+  --radius-input: 6px;
+  --radius-card: 10px;
+  --radius-modal: 14px;
+  --radius-pill: 999px;
+  --shadow-elev-1: var(--elev-1);
+  --shadow-elev-2: var(--elev-2);
+  --shadow-elev-3: var(--elev-3);
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-ui: 13px;
+  --text-ui--line-height: 18px;
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-subtitle: 16px;
+  --text-subtitle--line-height: 24px;
+  --text-title: 20px;
+  --text-title--line-height: 28px;
+  --text-display: 28px;
+  --text-display--line-height: 36px;
+  --tracking-title: -0.01em;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter Variable', sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+}

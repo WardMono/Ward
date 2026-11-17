@@ -1,8 +1,13 @@
-import { ElectronAPI } from '@electron-toolkit/preload'
+type AppVersion = { version: string }
+type VersionResult =
+  { ok: true; data: AppVersion } | { ok: false; error: { code: string; message: string } }
 
 declare global {
   interface Window {
-    electron: ElectronAPI
-    api: unknown
+    ward: {
+      getVersion: () => Promise<VersionResult>
+    }
   }
 }
+
+export {}

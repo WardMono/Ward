@@ -1,10 +1,10 @@
 # Ward progress
 
-Updated: 2026-11-17
+Updated: 2026-11-18
 
 ## Now
 
-Phase 0 gate passed (`docs/gates/phase-0.md`). Phase 1 is in progress. Next command: `GO 1.2`. Do not start Phase 2.
+Phase 0 gate passed (`docs/gates/phase-0.md`). Phase 1 is in progress. Next command: `GO 1.3`. Do not start Phase 2.
 
 App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. Next identity command waits for `GO` on AI-2. The Ward icon kit is not in the repo yet.
 
@@ -20,7 +20,7 @@ App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. 
 ## Phase 1 — Crypto core and vault header
 
 - [x] **1.1 Sodium and KDF.** `initSodium`, `randomBytes`, `wipe`, and Argon2id `deriveKek`. New vaults use MODERATE (ops 3, 256 MiB). Params below INTERACTIVE are rejected. The password string is not wiped; the UTF-8 copy is.
-- [ ] **1.2 AEAD wrap and unwrap.**
+- [x] **1.2 AEAD wrap and unwrap.** XChaCha20-Poly1305 with a fresh 24-byte nonce. Associated data is required. A bad unwrap throws `Unwrap failed.` and does not include the message.
 - [ ] **1.3 Recovery key.**
 - [ ] **1.4 Vault header:** create, unlock, rewrap, rotate, atomic read/write.
 - [ ] **1.5 Remaining Phase 1 tests** if 1.2–1.4 did not cover every deliverable case.

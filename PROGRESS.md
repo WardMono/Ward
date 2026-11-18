@@ -4,7 +4,7 @@ Updated: 2026-11-18
 
 ## Now
 
-Phase 0 gate passed (`docs/gates/phase-0.md`). Phase 1 is in progress. Next command: `GO 1.5`. Do not start Phase 2.
+Phase 1 gate passed (`docs/gates/phase-1.md`). Verdict: PASS. Awaiting sign-off. Do not start Phase 2 until you accept the gate and type `GO PHASE 2`.
 
 App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. Next identity command waits for `GO` on AI-2. The Ward icon kit is not in the repo yet.
 
@@ -23,7 +23,7 @@ App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. 
 - [x] **1.2 AEAD wrap and unwrap.** XChaCha20-Poly1305 with a fresh 24-byte nonce. Associated data is required. A bad unwrap throws `Unwrap failed.` and does not include the message.
 - [x] **1.3 Recovery key.** 32 random bytes, Crockford Base32 in groups of 4, mod-37 check symbol. `I/L/O` aliases are accepted. A bad check symbol is rejected. The RKEK is BLAKE2b keyed with `ward.recovery.rkek.v1`.
 - [x] **1.4 Vault header.** `createVault`, password and recovery unlock, `rewrapPassword`, `rotateRecovery`, Zod schema, and atomic write with `.bak`. Associated data is format, version, `createdAt`, and the KDF params. A password change keeps the salt so the recovery wrap stays valid. The vault key does not change.
-- [ ] **1.5 Remaining Phase 1 tests** if 1.2–1.4 did not cover every deliverable case.
+- [x] **1.5 Gap check.** The Phase 1 cases were already covered. One assertion was added: inside one header, the password nonce and the recovery nonce differ. No `Math.random` and no `console.log` in `crypto/`.
 
 ## Phases 2–12
 

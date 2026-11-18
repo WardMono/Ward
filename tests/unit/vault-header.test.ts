@@ -41,6 +41,7 @@ test('the same password makes two different headers and both unlock', () => {
   const again = createVault(password)
   expect(again.header.kdf.salt === header.kdf.salt).toBe(false)
   expect(again.header.wrappedByPassword.nonce === header.wrappedByPassword.nonce).toBe(false)
+  expect(header.wrappedByPassword.nonce === header.wrappedByRecovery.nonce).toBe(false)
   expect(Buffer.from(unlockWithPassword(header, password)).equals(vaultKey)).toBe(true)
   expect(Buffer.from(unlockWithPassword(again.header, password)).equals(again.vaultKey)).toBe(true)
   expect(Buffer.from(unlockWithRecovery(header, recoveryKey)).equals(vaultKey)).toBe(true)

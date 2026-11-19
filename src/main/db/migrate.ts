@@ -1,4 +1,5 @@
 import initSql from './migrations/0001_init.sql?raw'
+import ftsSql from './migrations/0002_fts.sql?raw'
 import type { ErrorCode } from '../../shared/ipc-contract'
 import type { openVault } from './open'
 
@@ -21,7 +22,10 @@ function migrationMessage(code: MigrationCode): string {
   return 'Vault database could not be migrated.'
 }
 
-const MIGRATIONS: readonly { version: number; sql: string }[] = [{ version: 1, sql: initSql }]
+const MIGRATIONS: readonly { version: number; sql: string }[] = [
+  { version: 1, sql: initSql },
+  { version: 2, sql: ftsSql }
+]
 
 function readUserVersion(db: VaultDatabase): number {
   const version = db.pragma('user_version', { simple: true })
@@ -36,6 +40,7 @@ function applyVersion(db: VaultDatabase, version: number, sql: string): void {
   const run = db.transaction(() => {
     db.exec(sql)
     if (version === 1) db.pragma('user_version = 1')
+    else if (version === 2) db.pragma('user_version = 2')
     else throw new MigrationError('IO_ERROR')
   })
   try {

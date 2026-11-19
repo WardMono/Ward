@@ -27,30 +27,33 @@ function names(db: ReturnType<typeof openVault>, sql: string): string[] {
   return rows.map((row) => row.name)
 }
 
-test('an empty database migrates to user_version 1', () => {
+test('an empty database migrates to the latest user_version', () => {
   const { dir, file } = tempFile()
   const key = randomBytes(32)
   try {
     const db = openVault(file, key)
     expect(db.pragma('user_version', { simple: true })).toBe(0)
     migrate(db)
-    expect(db.pragma('user_version', { simple: true })).toBe(1)
+    expect(db.pragma('user_version', { simple: true })).toBe(2)
     expect(db.pragma('foreign_keys', { simple: true })).toBe(1)
     expect(
       names(
         db,
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '%fts%' ORDER BY name"
       )
     ).toEqual(['entries', 'entry_history', 'folders', 'income', 'notes', 'settings', 'tasks'])
     expect(
       names(
         db,
-        "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+        "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '%fts%' ORDER BY name"
       )
     ).toEqual(['idx_entries_fav', 'idx_entries_folder', 'idx_income_date'])
     expect(
-      names(db, "SELECT name FROM sqlite_master WHERE name LIKE '%fts%' OR sql LIKE '%USING fts%'")
-    ).toEqual([])
+      names(
+        db,
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND sql LIKE '%USING fts5%' ORDER BY name"
+      )
+    ).toEqual(['entries_fts', 'income_fts', 'notes_fts', 'tasks_fts'])
 
     const amount = db
       .prepare("SELECT type FROM pragma_table_info('income') WHERE name = ?")
@@ -90,7 +93,7 @@ test('an empty database migrates to user_version 1', () => {
 
     const reopened = openVault(file, key)
     migrate(reopened)
-    expect(reopened.pragma('user_version', { simple: true })).toBe(1)
+    expect(reopened.pragma('user_version', { simple: true })).toBe(2)
     const row = reopened
       .prepare('SELECT password FROM entries WHERE id = ?')
       .get('fixture-entry') as
@@ -111,7 +114,7 @@ test('a newer user_version is refused', () => {
   const { dir, file } = tempFile()
   try {
     const db = openVault(file, randomBytes(32))
-    db.pragma('user_version = 2')
+    db.pragma('user_version = 3')
     expect(() => migrate(db)).toThrow(MigrationError)
     try {
       migrate(db)

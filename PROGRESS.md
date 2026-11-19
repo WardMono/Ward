@@ -4,7 +4,7 @@ Updated: 2026-11-19
 
 ## Now
 
-Phase 2 is in progress. Step 2.2 (migrations) is done. Next command: `GO 2.3`.
+Phase 2 is in progress. Step 2.3 (FTS5) is done. Next command: `GO 2.4`.
 
 App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. Next identity command waits for `GO` on AI-2. The Ward icon kit is not in the repo yet.
 
@@ -29,7 +29,7 @@ App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. 
 
 - [x] **2.1 Encrypted open.** `openVault` sets `cipher='sqlcipher'`, applies the raw 32-byte vault key as `PRAGMA key = "x'<64 hex>'"`, turns foreign keys on, and checks the cipher with a `sqlite_master` read. A bad key length is `INVALID_INPUT`. A wrong key or a failed read is `IO_ERROR` with a fixed message. `loadCipherDriver()` still runs at startup.
 - [x] **2.2 Migrations.** `migrate()` applies `0001_init.sql` inside a transaction and sets `user_version` to 1. A second run leaves the version and the rows unchanged. A higher `user_version` is `UNSUPPORTED_VERSION`. No FTS tables.
-- [ ] **2.3 FTS5.** Search tables and triggers. Passwords are not indexed.
+- [x] **2.3 FTS5.** `0002_fts.sql` adds external-content search tables and sync triggers for entries (title, username, url), notes, tasks, and income. Existing rows are rebuilt into the index. Entry passwords are not indexed.
 - [ ] **2.4 Repositories.** Folders, entries and history trim, notes, tasks, income, settings, search, and money helpers.
 - [ ] **2.5 WAL/SHM.** Finding and mitigation in `DB-NOTES.md`, plus any deliverable tests still open.
 

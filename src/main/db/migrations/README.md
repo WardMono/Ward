@@ -1,3 +1,7 @@
 # Migrations
 
-Empty on purpose. The first SQL file arrives in Phase 2. No schema is defined in this step.
+Forward-only. `migrate()` applies each SQL file in order inside a transaction and sets `PRAGMA user_version` to that file's number. Applying an already-applied version is a no-op.
+
+There is no down script. Roll back by restoring the safety backup, or delete the dev vault and create it again.
+
+`0001_init.sql` is the Section 5 schema. FTS is a later migration.

@@ -4,7 +4,7 @@ Updated: 2026-11-19
 
 ## Now
 
-Phase 2 is in progress. Step 2.1 (encrypted open) is done. Next command: `GO 2.2`.
+Phase 2 is in progress. Step 2.2 (migrations) is done. Next command: `GO 2.3`.
 
 App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. Next identity command waits for `GO` on AI-2. The Ward icon kit is not in the repo yet.
 
@@ -28,7 +28,7 @@ App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. 
 ## Phase 2 — Encrypted database, migrations, repositories
 
 - [x] **2.1 Encrypted open.** `openVault` sets `cipher='sqlcipher'`, applies the raw 32-byte vault key as `PRAGMA key = "x'<64 hex>'"`, turns foreign keys on, and checks the cipher with a `sqlite_master` read. A bad key length is `INVALID_INPUT`. A wrong key or a failed read is `IO_ERROR` with a fixed message. `loadCipherDriver()` still runs at startup.
-- [ ] **2.2 Migrations.** Runner with `user_version`, and `0001_init.sql` from Section 5. No FTS yet.
+- [x] **2.2 Migrations.** `migrate()` applies `0001_init.sql` inside a transaction and sets `user_version` to 1. A second run leaves the version and the rows unchanged. A higher `user_version` is `UNSUPPORTED_VERSION`. No FTS tables.
 - [ ] **2.3 FTS5.** Search tables and triggers. Passwords are not indexed.
 - [ ] **2.4 Repositories.** Folders, entries and history trim, notes, tasks, income, settings, search, and money helpers.
 - [ ] **2.5 WAL/SHM.** Finding and mitigation in `DB-NOTES.md`, plus any deliverable tests still open.

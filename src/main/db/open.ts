@@ -41,6 +41,7 @@ function rawKeyHex(vaultKey: Uint8Array): string {
 /**
  * Opens an encrypted database with the raw 32-byte vault key.
  * Cipher is set to sqlcipher before the key. The key pragma uses x'<64 hex>'.
+ * Journal mode is pinned to DELETE so wal and shm files are not used.
  * A wrong key fails on the first page read, not on the key pragma.
  */
 export function openVault(file: string, vaultKey: Uint8Array): CipherDatabase {
@@ -50,10 +51,14 @@ export function openVault(file: string, vaultKey: Uint8Array): CipherDatabase {
     db = new Database(file)
     db.pragma(`cipher='sqlcipher'`)
     db.pragma(`key = "x'${hex}'"`)
+    db.pragma('journal_mode = DELETE')
     db.pragma('foreign_keys = ON')
     const cipher = db.pragma('cipher', { simple: true })
     const foreignKeys = db.pragma('foreign_keys', { simple: true })
-    if (cipher !== 'sqlcipher' || foreignKeys !== 1) throw new VaultDbError('IO_ERROR')
+    const journal = db.pragma('journal_mode', { simple: true })
+    if (cipher !== 'sqlcipher' || foreignKeys !== 1 || journal !== 'delete') {
+      throw new VaultDbError('IO_ERROR')
+    }
     db.prepare('SELECT count(*) AS n FROM sqlite_master').get()
     return db
   } catch (error) {

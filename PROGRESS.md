@@ -4,7 +4,7 @@ Updated: 2026-11-19
 
 ## Now
 
-Phase 2 is in progress. Step 2.4 (repositories) is done. Next command: `GO 2.5`.
+Phase 2 steps are in the tree. Next command: `GATE`.
 
 App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. Next identity command waits for `GO` on AI-2. The Ward icon kit is not in the repo yet.
 
@@ -31,7 +31,7 @@ App-identity step AI-1 is recorded in `docs/reports/app-identity/step-AI-1.md`. 
 - [x] **2.2 Migrations.** `migrate()` applies `0001_init.sql` inside a transaction and sets `user_version` to 1. A second run leaves the version and the rows unchanged. A higher `user_version` is `UNSUPPORTED_VERSION`. No FTS tables.
 - [x] **2.3 FTS5.** `0002_fts.sql` adds external-content search tables and sync triggers for entries (title, username, url), notes, tasks, and income. Existing rows are rebuilt into the index. Entry passwords are not indexed.
 - [x] **2.4 Repositories.** Folders, entries with history trimmed to 10, notes, tasks, income, settings, and search. List and get payloads omit passwords. Money helpers parse and format integer centavos. Deleting a folder leaves items unfiled.
-- [ ] **2.5 WAL/SHM.** Finding and mitigation in `DB-NOTES.md`, plus any deliverable tests still open.
+- [x] **2.5 WAL/SHM.** `DB-NOTES.md` records the measurement. Default journal mode is `delete`. The fixture was absent from the database, the rollback journal, and from `-wal` and `-shm` when WAL was forced. `openVault` pins `journal_mode = DELETE`. The plaintext header size stays 0.
 
 ## Phases 3–12
 
